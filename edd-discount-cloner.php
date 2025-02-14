@@ -121,6 +121,27 @@ class EDD_Discount_Cloner {
 			edd_update_adjustment( $new_discount_id, array( 'scope' => 'not_global' ) );
 		}
 
+		// Clone any additional meta that isn't handled by edd_add_discount() to support other add-ons, like
+		// AffiliateWP and WP Fusion.
+		global $wpdb;
+		$meta = $wpdb->get_results( $wpdb->prepare(
+			"SELECT meta_key, meta_value FROM {$wpdb->prefix}edd_adjustmentmeta 
+			WHERE edd_adjustment_id = %d 
+			AND meta_key NOT IN (
+				'product_requirement',
+				'excluded_product',
+				'product_condition',
+				'categories',
+				'term_condition'
+			)",
+			$discount_id
+		) );
+
+		foreach ( $meta as $meta_item ) {
+			$meta_value = maybe_unserialize( $meta_item->meta_value );
+			edd_add_adjustment_meta( $new_discount_id, $meta_item->meta_key, $meta_value );
+		}
+
 		// Redirect back to the discounts page
 		wp_safe_redirect( add_query_arg(
 			array(

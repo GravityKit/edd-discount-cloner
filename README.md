@@ -18,6 +18,8 @@ This plugin adds a "Clone" action to the Easy Digital Downloads discount codes t
   - Product requirements and exclusions
   - Category requirements and exclusions
   - Usage restrictions
+  - Notes and internal comments
+  - Any additional settings from extensions that modify the discount object, like AffiliateWP and WP Fusion
 
 After cloning, you'll be shown a success message with a direct link to edit the newly created discount code.
 
