@@ -126,6 +126,49 @@ class EDD_Discount_Cloner {
 
 		// Clone any additional meta that isn't handled by edd_add_discount() to support other add-ons, like
 		// AffiliateWP and WP Fusion.
+		// Clone notes for a discount.
+		$this->clone_notes( $discount_id, $new_discount_id );
+
+	/**
+	 * Clone notes for a discount
+	 *
+	 * @param int $original_discount_id The ID of the original discount
+	 * @param int $new_discount_id The ID of the new discount
+	 */
+	function clone_notes( $discount_id, $new_discount_id ) {
+
+		// Called directly instead of using edd_get_discount_notes() to avoid the limit of 30 notes.
+		$notes = edd_get_notes( array(
+			'object_id'   => $discount_id,
+			'object_type' => 'discount',
+			'order'       => 'asc',
+			'number'      => - 1,
+		) );
+
+		if ( empty( $notes ) ) {
+			return;
+		}
+		foreach ( $notes as $note ) {
+			$note_data = array(
+				'object_id'   => $new_discount_id,
+				'object_type' => 'discount',
+				'content'     => $note->content,
+			);
+
+			// Only include optional fields if they exist
+			if ( ! empty( $note->user_id ) ) {
+				$note_data['user_id'] = $note->user_id;
+			}
+			if ( ! empty( $note->date_created ) ) {
+				$note_data['date_created'] = $note->date_created;
+			}
+			if ( ! empty( $note->date_modified ) ) {
+				$note_data['date_modified'] = $note->date_modified;
+			}
+
+			edd_add_note( $note_data );
+		}
+	}
 		global $wpdb;
 		$meta = $wpdb->get_results( $wpdb->prepare(
 			"SELECT meta_key, meta_value FROM {$wpdb->prefix}edd_adjustmentmeta 
