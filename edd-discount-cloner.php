@@ -237,9 +237,12 @@ new EDD_Discount_Cloner();
 
 // Add a notice for successful cloning
 function edd_discount_cloner_admin_notices() {
-	if ( isset( $_GET['edd-message'] ) && 'discount_cloned' === $_GET['edd-message'] ) {
-		$discount_id = isset( $_GET['discount-id'] ) ? absint( $_GET['discount-id'] ) : 0;
-		$edit_url    = '';
+	if ( ! isset( $_GET['edd-message'] ) || 'discount_cloned' !== $_GET['edd-message'] ) {
+		return;
+	}
+
+	$discount_id = isset( $_GET['discount-id'] ) ? absint( $_GET['discount-id'] ) : 0;
+	$edit_url    = '';
 
 		if ( $discount_id ) {
 			$edit_url = add_query_arg(
