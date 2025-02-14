@@ -116,7 +116,10 @@ class EDD_Discount_Cloner {
 			wp_die( esc_html__( 'Error creating discount code clone.', 'edd-discount-cloner' ) );
 		}
 
-		// If there are product requirements, ensure scope is not_global
+		// Force inactive status after creation (this wasn't taking effect when using edd_add_discount()).
+		edd_update_adjustment( $new_discount_id, array( 'status' => 'inactive' ) );
+
+		// If there are product requirements, ensure scope is not_global.
 		if ( ! empty( $discount_data['product_reqs'] ) && $discount_data['scope'] === 'global' ) {
 			edd_update_adjustment( $new_discount_id, array( 'scope' => 'not_global' ) );
 		}
