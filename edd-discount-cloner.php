@@ -124,10 +124,11 @@ class EDD_Discount_Cloner {
 			edd_update_adjustment( $new_discount_id, array( 'scope' => 'not_global' ) );
 		}
 
-		// Clone any additional meta that isn't handled by edd_add_discount() to support other add-ons, like
-		// AffiliateWP and WP Fusion.
 		// Clone notes for a discount.
 		$this->clone_notes( $discount_id, $new_discount_id );
+
+		// Clone all additional meta to support other add-ons.
+		$this->clone_adjustment_meta( $discount_id, $new_discount_id );
 
 	/**
 	 * Clone notes for a discount
@@ -169,7 +170,17 @@ class EDD_Discount_Cloner {
 			edd_add_note( $note_data );
 		}
 	}
+
+	/**
+	 * Clone adjustment meta for a discount to support other add-ons, like
+	 * AffiliateWP and WP Fusion.
+	 *
+	 * @param int $discount_id The ID of the original discount
+	 * @param int $new_discount_id The ID of the new discount
+	 */
+	private function clone_adjustment_meta( $discount_id, $new_discount_id ) {
 		global $wpdb;
+
 		$meta = $wpdb->get_results( $wpdb->prepare(
 			"SELECT meta_key, meta_value FROM {$wpdb->prefix}edd_adjustmentmeta 
 			WHERE edd_adjustment_id = %d 
