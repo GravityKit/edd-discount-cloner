@@ -88,7 +88,6 @@ class EDD_Discount_Cloner {
 			'name'              => sprintf( esc_html__( '%s (Copy)', 'edd-discount-cloner' ), $discount->name ),
 			'code'              => $this->generate_unique_code( $discount->code ),
 			'status'            => 'inactive',
-			// Force inactive status
 			'type'              => $discount->type,
 			'amount'            => $discount->amount,
 			'amount_type'       => $discount->amount_type,
@@ -96,20 +95,17 @@ class EDD_Discount_Cloner {
 			'start_date'        => $discount->start_date,
 			'end_date'          => $discount->end_date,
 			'use_count'         => 0,
-			// Reset use count
 			'max_uses'          => $discount->max_uses,
 			'once_per_customer' => $discount->once_per_customer,
 			'scope'             => $discount->scope ? $discount->scope : 'global',
-			// Default to global if not set
 			'product_condition' => $discount->product_condition ? $discount->product_condition : 'any',
-			// Default to any if not set
 			'product_reqs'      => $discount->product_reqs,
 			'excluded_products' => $discount->excluded_products,
 			'categories'        => edd_get_adjustment_meta( $discount_id, 'categories', true ),
 			'term_condition'    => edd_get_adjustment_meta( $discount_id, 'term_condition', true ),
 		);
 
-		// Insert the new discount
+		// Insert the new discount.
 		$new_discount_id = edd_add_discount( $discount_data );
 
 		if ( ! $new_discount_id || is_wp_error( $new_discount_id ) ) {
@@ -130,13 +126,26 @@ class EDD_Discount_Cloner {
 		// Clone all additional meta to support other add-ons.
 		$this->clone_adjustment_meta( $discount_id, $new_discount_id );
 
+		// Redirect back to the discounts page.
+		wp_safe_redirect( add_query_arg(
+			array(
+				'post_type'   => 'download',
+				'page'        => 'edd-discounts',
+				'edd-message' => 'discount_cloned',
+				'discount-id' => absint( $new_discount_id ),
+			),
+			admin_url( 'edit.php' )
+		) );
+		exit;
+	}
+
 	/**
 	 * Clone notes for a discount
 	 *
 	 * @param int $original_discount_id The ID of the original discount
 	 * @param int $new_discount_id The ID of the new discount
 	 */
-	function clone_notes( $discount_id, $new_discount_id ) {
+	private function clone_notes( $discount_id, $new_discount_id ) {
 
 		// Called directly instead of using edd_get_discount_notes() to avoid the limit of 30 notes.
 		$notes = edd_get_notes( array(
@@ -198,18 +207,6 @@ class EDD_Discount_Cloner {
 			$meta_value = maybe_unserialize( $meta_item->meta_value );
 			edd_add_adjustment_meta( $new_discount_id, $meta_item->meta_key, $meta_value );
 		}
-
-		// Redirect back to the discounts page
-		wp_safe_redirect( add_query_arg(
-			array(
-				'post_type'   => 'download',
-				'page'        => 'edd-discounts',
-				'edd-message' => 'discount_cloned',
-				'discount-id' => absint( $new_discount_id ),
-			),
-			admin_url( 'edit.php' )
-		) );
-		exit;
 	}
 
 	/**
@@ -275,6 +272,5 @@ function edd_discount_cloner_admin_notices() {
         </div>
 		<?php
 	}
-}
 
 add_action( 'admin_notices', 'edd_discount_cloner_admin_notices' );
