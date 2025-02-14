@@ -45,12 +45,6 @@ Or manually:
 4. A new inactive copy of the discount will be created
 5. Click the "Edit the cloned discount" link in the success message to review and modify the new discount
 
-## Requirements
-
-- WordPress 4.7 or higher
-- Easy Digital Downloads 2.9 or higher
-- PHP 5.6 or higher
-
 ## Security
 
 The plugin includes several security measures:
@@ -74,7 +68,7 @@ This plugin is licensed under the GPL v2 or later.
 
 ## Changelog
 
-### 1.0.0
+### 1.0.0 on 2025-02-14 ❤️
 - Initial release
 - Added ability to clone discount codes
-- Added direct link to edit newly created discounts 
+- Added direct link to edit newly created discounts
