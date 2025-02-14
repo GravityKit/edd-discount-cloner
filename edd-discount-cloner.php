@@ -232,7 +232,9 @@ class EDD_Discount_Cloner {
 // Initialize the plugin
 new EDD_Discount_Cloner();
 
-// Add a notice for successful cloning
+/**
+ * Displays an admin notice after cloning a discount.
+ */
 function edd_discount_cloner_admin_notices() {
 	if ( ! isset( $_GET['edd-message'] ) || 'discount_cloned' !== $_GET['edd-message'] ) {
 		return;
@@ -241,36 +243,34 @@ function edd_discount_cloner_admin_notices() {
 	$discount_id = isset( $_GET['discount-id'] ) ? absint( $_GET['discount-id'] ) : 0;
 	$edit_url    = '';
 
-		if ( $discount_id ) {
-			$edit_url = add_query_arg(
-				array(
-					'edd-action' => 'edit_discount',
-					'discount'   => $discount_id,
-				),
-				admin_url( 'edit.php?post_type=download&page=edd-discounts' )
-			);
-		}
-		?>
-        <div class="notice notice-success is-dismissible">
-            <p>
-				<?php
-				if ( $edit_url ) {
-					printf(
-					/* translators: %s: URL to edit the cloned discount */
-						esc_html__( 'Discount code cloned successfully. %s', 'edd-discount-cloner' ),
-						sprintf(
-							'<a href="%s">%s</a>',
-							esc_url( $edit_url ),
-							esc_html__( 'Edit the cloned discount', 'edd-discount-cloner' )
-						)
-					);
-				} else {
-					esc_html_e( 'Discount code cloned successfully.', 'edd-discount-cloner' );
-				}
-				?>
-            </p>
-        </div>
-		<?php
+	if ( $discount_id ) {
+		$edit_url = add_query_arg(
+			array(
+				'edd-action' => 'edit_discount',
+				'discount'   => $discount_id,
+			),
+			admin_url( 'edit.php?post_type=download&page=edd-discounts' )
+		);
 	}
+	?>
+	<div class="notice notice-success is-dismissible">
+		<p><?php
+			if ( $edit_url ) {
+				printf(
+				/* translators: %s: URL to edit the cloned discount */
+					esc_html__( 'Discount code cloned successfully. %s', 'edd-discount-cloner' ),
+					sprintf(
+						'<a href="%s">%s</a>',
+						esc_url( $edit_url ),
+						esc_html__( 'Edit the cloned discount', 'edd-discount-cloner' )
+					)
+				);
+			} else {
+				esc_html_e( 'Discount code cloned successfully.', 'edd-discount-cloner' );
+			}
+			?></p>
+	</div>
+	<?php
+}
 
 add_action( 'admin_notices', 'edd_discount_cloner_admin_notices' );
